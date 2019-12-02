@@ -8,33 +8,38 @@ class SlideButton extends StatefulWidget {
   final int index;
   final Widget child;
   final List<Widget> buttons;
-  final GlobalKey<SlideButtonState> key;
+  final GlobalKey<SlideButtonState> slideButtonKey;
   final double singleButtonWidth;//
 
   final VoidCallback onSlideStarted;
   final VoidCallback onSlideCompleted;
   final VoidCallback onSlideCanceled;
 
-  SlideButton({this.key,
+  final int canDragNumber;///1,0 可以 drag , >1 不可
+
+  SlideButton({this.slideButtonKey,
         @required this.child,
         @required this.singleButtonWidth,
         @required this.buttons,
+        this.canDragNumber,
         this.index,
         this.onSlideStarted,
         this.onSlideCompleted,
         this.onSlideCanceled,
         })
-      : super(key: key);
+      : super(key: slideButtonKey);
 
   @override
   State<StatefulWidget> createState() {
     return SlideButtonState();
   }
 
-
 }
 
 class SlideButtonState extends State<SlideButton> with TickerProviderStateMixin {
+
+  bool _ignoreEven = false;
+
   bool isOpened = false;
   double translateX = 0;
   double maxDragDistance;
@@ -42,7 +47,6 @@ class SlideButtonState extends State<SlideButton> with TickerProviderStateMixin 
   <Type, GestureRecognizerFactory>{};
 
   VoidCallback closedCallBack;
-
   AnimationController animationController;
 
   @override
@@ -71,9 +75,7 @@ class SlideButtonState extends State<SlideButton> with TickerProviderStateMixin 
 
     EventBusInstance().bus.on<CloseOpenedCellEvent>().listen((_) async {
       int index = _.closeIndex;
-//      print(" ------------------------1111111111111111111111------------------------- cell .index is $index");
       if (index == widget.index && isOpened) {
-//        print(" ------------------------222222222222222222222------------------------- cell .index is $index");
         _closeCell();
         isOpened = false;
       }
@@ -90,13 +92,16 @@ class SlideButtonState extends State<SlideButton> with TickerProviderStateMixin 
 
   @override
   Widget build(BuildContext context) {
-    return  WillPopScope(
-        child: Stack(
+    if(widget.canDragNumber>1) {
+      translateX = 0;
+//      print('--------------000000000000000000000000------------------------- cell');
+    }
+    return  Stack(
           children: <Widget>[
             Positioned.fill(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: widget.buttons,
+                  children:widget.buttons,
                 )
             ),
             RawGestureDetector(
@@ -114,14 +119,6 @@ class SlideButtonState extends State<SlideButton> with TickerProviderStateMixin 
               ),
             )
           ],
-        ),
-        onWillPop: () async {
-          if (translateX != 0){
-            close();
-            return false;
-          }
-          return true;
-        }
     );
   }
 
@@ -172,11 +169,24 @@ class SlideButtonState extends State<SlideButton> with TickerProviderStateMixin 
     }
   }
 
+
+  void changeIgnoreEven(bool isIgnore) {
+    setState(() {
+      _ignoreEven = isIgnore;
+      if (_ignoreEven) {
+        print("不能拖动！！");
+      } else {
+        print("能拖动！！");
+      }
+    });
+  }
+
   @override
   void dispose() {
     animationController.dispose();
     super.dispose();
   }
+
 }
 
 
@@ -202,6 +212,7 @@ class ShareDataWidget extends InheritedWidget {
   }
 
 }
+
 
 ///Notification 冒泡事件
 class CellCloseNotification extends Notification {
