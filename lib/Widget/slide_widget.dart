@@ -1,8 +1,9 @@
 
+import 'package:expanded_sample/Event/biz_eventbus.dart';
+import 'package:expanded_sample/Event/event_bus.dart';
+import 'package:expanded_sample/Event/normal_events.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:expanded_sample/biz_eventbus.dart';
-import 'package:expanded_sample/normal_events.dart';
 
 class SlideButton extends StatefulWidget {
   final int index;
@@ -80,8 +81,6 @@ class SlideButtonState extends State<SlideButton> with TickerProviderStateMixin 
         isOpened = false;
       }
     });
-
-
   }
 
   bool _closeCell() {

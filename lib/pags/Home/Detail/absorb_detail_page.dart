@@ -1,13 +1,15 @@
 import 'dart:ui' as ui;
 
+import 'package:expanded_sample/Widget/week_choice_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AbsorbDetailPage extends StatefulWidget {
 
   final int pagIndex;
+  final String title;
 
-  AbsorbDetailPage({this.pagIndex});
+  AbsorbDetailPage({this.pagIndex, this.title});
 
   @override
   State<AbsorbDetailPage> createState() {
@@ -49,7 +51,7 @@ class _AbsorbDetailPageState extends State <AbsorbDetailPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar:AppBar(
-          title: Text("Title Absorb"),
+          title: Text(widget.title),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.refresh),
@@ -70,19 +72,18 @@ class _AbsorbDetailPageState extends State <AbsorbDetailPage> {
           height: windowHeight,
           padding: EdgeInsets.fromLTRB(10, 20 , 10, 0),
           color: Colors.blueAccent,
-          child: AbsorbPointer(
+          child: AbsorbPointer( ///屏蔽事件响应
             absorbing: false,
             child: Listener(
               onPointerDown:(_){
                 print("\n 11111 _onPointerDown：" );
               },
-
               onPointerUp: (_) {
                 print("\n 11111 onPointerUp：" );
               },
 
               child: Container(
-                color: Colors.yellowAccent,
+                color: Colors.orange,
                 width: 300.0,
                 height: 200.0,
               ),
@@ -90,13 +91,13 @@ class _AbsorbDetailPageState extends State <AbsorbDetailPage> {
           ),
         ),
       ),
-
     );
   }
 
-
   _run() {
-    print("refresh action!!");
+      WeekChoiceDialog.show(context).then((List<int> items) {
+        print("$items");
+      });
   }
 
 }

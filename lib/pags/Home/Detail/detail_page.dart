@@ -1,14 +1,17 @@
-import 'dart:ui';
 
+import 'package:expanded_sample/Widget/time_choice_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class DetailPage extends StatefulWidget {
 
   final int pagIndex;
 
-  DetailPage({this.pagIndex});
+  final String title;
+
+  DetailPage({this.pagIndex, this.title});
 
   @override
   State<DetailPage> createState() {
@@ -18,6 +21,8 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+
+  String _value = '';
 
   @override
   void initState() {
@@ -29,16 +34,20 @@ class _DetailPageState extends State<DetailPage> {
     super.dispose();
   }
 
+//  @override
+//  bool get userGestureInProgress => true;
 
   @override
   Widget build(BuildContext context) {
     return buildWidget(context);
   }
 
+
+
   Widget buildWidget(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar:AppBar(title: Text("Title"), actions: <Widget>[
+      appBar:AppBar(title: Text(widget.title), actions: <Widget>[
         IconButton(
           icon: Icon(Icons.refresh),
           tooltip: 'Run again',
@@ -46,21 +55,31 @@ class _DetailPageState extends State<DetailPage> {
         ),
       ]
       ),
-      body: RawGestureDetector(
-        gestures: {
-          DetailNotAllowMultipleGestureRecognizer: GestureRecognizerFactoryWithHandlers<DetailNotAllowMultipleGestureRecognizer> (
-                () => DetailNotAllowMultipleGestureRecognizer(), //构造函数
-                (DetailNotAllowMultipleGestureRecognizer instance) { //初始化器
-//              instance.onTap = () => print('Episode 4 is best! (parent container) ');
-                  instance.onTap = (int pointer) => print(' BBBBBBBBB 4 is best! (parent container) ');
-
-                  instance.onTapDown = (int pointer, TapDownDetails details) => print('BBBBBBBB  onDown 111111111111 is best! ');
-//                   instance.onUpdate = (_)=> print('onUpdate 2222222222222 is best!');
-                  instance.onTapUp  = (int pointer, TapUpDetails details) => print('  BBBBBBB  onUpdate 33333333333333 is best!');
-            },
-          )
+      body:GestureDetector (
+        onHorizontalDragDown:(_){
+          print("back gesture !");
         },
-        behavior: HitTestBehavior.deferToChild,
+        onHorizontalDragStart:(_){
+          print("back gesture onHorizontalDragStart!");
+        },
+        onHorizontalDragUpdate:(_){
+          print("back gesture onHorizontalDragUpdate!");
+        },
+        child:RawGestureDetector(
+          gestures: {
+            DetailNotAllowMultipleGestureRecognizer: GestureRecognizerFactoryWithHandlers<DetailNotAllowMultipleGestureRecognizer> (
+                  () => DetailNotAllowMultipleGestureRecognizer(), //构造函数
+                  (DetailNotAllowMultipleGestureRecognizer instance) { //初始化器
+//              instance.onTap = () => print('Episode 4 is best! (parent container) ');
+                instance.onTap = (int pointer) => print(' BBBBBBBBB 4 is best! (parent container) ');
+
+                instance.onTapDown = (int pointer, TapDownDetails details) => print('BBBBBBBB  onDown 111111111111 is best! ');
+//                   instance.onUpdate = (_)=> print('onUpdate 2222222222222 is best!');
+                instance.onTapUp  = (int pointer, TapUpDetails details) => print('  BBBBBBB  onUpdate 33333333333333 is best!');
+              },
+            )
+          },
+          behavior: HitTestBehavior.deferToChild,
           child: Container(
             color: Colors.blueAccent,
             child: Center(
@@ -71,13 +90,14 @@ class _DetailPageState extends State<DetailPage> {
                 },
                 //在第一个容器中创建嵌套容器。
                 child: Container(
-                  color: Colors.yellowAccent,
+                  color: Colors.white,
                   width: 300.0,
                   height: 400.0,
                 ),
               ),
             ),
           ),
+        ),
       ),
     );
   }
@@ -96,6 +116,24 @@ class _DetailPageState extends State<DetailPage> {
 
   _run() {
     print("run action!!");
+//    _selectTime();
+    TimeChoiceDialog.show(context).then((List<int> items){
+      print("$items");
+    });
+  }
+
+  Future _selectTime() async {
+    DatePicker.showTimePicker(context,
+        showTitleActions: false,
+        showSecondsColumn: false,
+        onChanged: (date) {
+          print('change $date');
+        },
+        onConfirm: (date) {
+          print('confirm $date');
+        },
+        currentTime: DateTime.parse("2012-02-27 13:27"),
+        locale: LocaleType.zh);
   }
 
 }
