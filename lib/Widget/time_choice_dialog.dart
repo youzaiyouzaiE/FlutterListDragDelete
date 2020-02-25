@@ -1,13 +1,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
-
+import 'package:intl/intl.dart';
 
 class TimeChoiceDialog {
 
-  static Future<List<int>> show(BuildContext context) async {
+  static Future<Map<int,String>> show(BuildContext context) async {
 
-    return await showModalBottomSheet<List<int>>(
+    Map<int,String> selectedTime = Map();
+
+    return await showModalBottomSheet<Map<int,String>>(
         context: context,
 //        backgroundColor:Colors.transparent,
         builder: (BuildContext context) {
@@ -24,12 +26,10 @@ class TimeChoiceDialog {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Container(
-//                                width: 70,
                           child: FlatButton(
                               child: Text('取消',
                                 style: TextStyle(
                                     color:Color(0xFF4785FF),
-//                                        fontFamily: ,
                                     fontSize: 16
                                 ),
                               ),
@@ -53,14 +53,14 @@ class TimeChoiceDialog {
                                 ),
                               ),
                               onPressed: (){
-                                Navigator.pop(context);
+                                Navigator.pop(context,selectedTime);
                               }
                           ),
                         ),
                       ],
                     ),
                   ),
-                  TimeChoiceContentWidget(),
+                  TimeChoiceContentWidget(chooseTime: selectedTime),
                 ],
               ),
 
@@ -73,11 +73,9 @@ class TimeChoiceDialog {
 
 class TimeChoiceContentWidget extends StatefulWidget{
 
-  final List<String> defaultTime;
+  final Map<int,String> chooseTime;
 
-  final void Function(List<int>) onChanged;
-
-  TimeChoiceContentWidget({this.defaultTime, this.onChanged, Key key}) : super (key : key);
+  TimeChoiceContentWidget({this.chooseTime, Key key}) : super (key : key);
 
   @override
   State<StatefulWidget> createState() {
@@ -85,13 +83,20 @@ class TimeChoiceContentWidget extends StatefulWidget{
   }
 }
 
-class TimeChoiceContentWidgetState extends State <TimeChoiceContentWidget>{
+class TimeChoiceContentWidgetState extends State <TimeChoiceContentWidget> {
 
-  ValueNotifier<List<String>> checked ;
+  int _currentSelectedItem; /// 1,start   2, end
+
+  String _startTime = '开始时间';
+
+  String _endTime = '结束时间';
+
+  Map <int,String> chooseTime;
 
   @override
   void initState() {
-//    checked = ValueNotifier(widget.defaultTime);
+    chooseTime = widget.chooseTime;
+    _currentSelectedItem = 1;
     super.initState();
   }
 
@@ -112,16 +117,13 @@ class TimeChoiceContentWidgetState extends State <TimeChoiceContentWidget>{
                 Container(),
                 Container(
                   child: FlatButton(
-                      child: Text('开始时间',
+                      child: Text(_startTime,
                         style: TextStyle(
-                            color:Color(0xFF4785FF),
-//                                        fontFamily: ,
+                            color:_startTime =='开始时间'? Color(0xFF333333):Color(0xFF4785FF),
                             fontSize: 16
                         ),
                       ),
-                      onPressed:(){
-
-                      },
+                      onPressed:_onPressedStart,
                   ),
                 ),
                 Container(
@@ -131,15 +133,13 @@ class TimeChoiceContentWidgetState extends State <TimeChoiceContentWidget>{
                 ),
                 Container(
                   child: FlatButton(
-                      child: Text('结束时间',
+                      child: Text(_endTime,
                         style: TextStyle(
-                            color:Color(0xFF4785FF),
+                            color:_endTime == '结束时间'? Color(0xFF333333) : Color(0xFF4785FF),
                             fontSize: 16
                         ),
                       ),
-                      onPressed: (){
-
-                      }
+                    onPressed:_onPressedEnd,
                   ),
                 ),
                 Container(),
@@ -150,8 +150,6 @@ class TimeChoiceContentWidgetState extends State <TimeChoiceContentWidget>{
             height: 0.5,
             color: Color(0xFFE5E5E5),
           ),
-//          Expanded(
-//            child:
             Container(
               height: 170,
 //                 padding: EdgeInsets.only(top: 20,left: 15),
@@ -159,18 +157,36 @@ class TimeChoiceContentWidgetState extends State <TimeChoiceContentWidget>{
 //                initDateTime:DateTime.parse("2012-02-27 00:00"),
                   locale:DateTimePickerLocale.zh_cn,
                   pickerTheme:DateTimePickerTheme(showTitle: false),
-                  onChange:(DateTime dateTime, List<int> selectedIndex) {
-                  print('dateTime: $dateTime , selectedIndex:$selectedIndex');
-                },
+                  onChange:_onSelectedChange,
               ),
             ),
-//          )
         ],
       ),
     );
   }
 
-  void invalidate() {
+  void _onPressedStart() {
+    _currentSelectedItem = 1;
+  }
+
+  void _onPressedEnd() {
+    _currentSelectedItem = 2;
+  }
+
+  void _onSelectedChange(DateTime dateTime, List<int> selectedIndex) {
+    String formattedDate = DateFormat('HH:mm').format(dateTime);
+    print('formattedDate:$formattedDate, dateTime: $dateTime , selectedIndex:$selectedIndex');
+    if (_currentSelectedItem == 1) {
+      _startTime = formattedDate;
+    } else {
+      _endTime = formattedDate;
+    }
+    chooseTime[_currentSelectedItem] = formattedDate;
+    _invalidate();
+  }
+
+  void _invalidate() {
     setState(() {});
   }
+
 }

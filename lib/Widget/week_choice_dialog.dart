@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 class WeekChoiceDialog {
-  ///checked constants int ==> [DateTime.monday] ~ [DateTime.sunday]
+
   static Future<List<int>> show(BuildContext context, {List<int> defChecked}) async {
 
     List<int> checked = defChecked ?? List();
@@ -61,7 +61,7 @@ class WeekChoiceDialog {
                               alignment: Alignment.center,
                               child: FlatButton(
                                 onPressed: (){
-                                  Navigator.pop(context, checked);
+                                  Navigator.pop(context);
                                 },
                                 color: Colors.transparent,
                               ),

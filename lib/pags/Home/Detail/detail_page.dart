@@ -3,7 +3,6 @@ import 'package:expanded_sample/Widget/time_choice_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class DetailPage extends StatefulWidget {
 
@@ -117,25 +116,10 @@ class _DetailPageState extends State<DetailPage> {
   _run() {
     print("run action!!");
 //    _selectTime();
-    TimeChoiceDialog.show(context).then((List<int> items){
+    TimeChoiceDialog.show(context).then((Map<int,String> items){
       print("$items");
     });
   }
-
-  Future _selectTime() async {
-    DatePicker.showTimePicker(context,
-        showTitleActions: false,
-        showSecondsColumn: false,
-        onChanged: (date) {
-          print('change $date');
-        },
-        onConfirm: (date) {
-          print('confirm $date');
-        },
-        currentTime: DateTime.parse("2012-02-27 13:27"),
-        locale: LocaleType.zh);
-  }
-
 }
 
 class DetailNotAllowMultipleGestureRecognizer extends MultiTapGestureRecognizer {
